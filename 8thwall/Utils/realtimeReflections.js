@@ -1,7 +1,4 @@
 /* eslint-disable no-undef */
-import * as THREE from 'three';
-//  or
-// const THREE = window.THREE
 
 export const realtimeReflections = () => {
   let renderer_ = null
@@ -39,6 +36,7 @@ export const realtimeReflections = () => {
   // Return a camera pipeline module that returns a renderer
   return {
     name: 'realtimereflection',
+
     // TODO: THIS NEEDS TO BE AN UPDATE. OR
     onStart: ({ canvas }) => {
       const { scene, camera, renderer } = XR8.Threejs.xrScene()  // Get the 3js scene from XR8.Threejs
@@ -51,20 +49,23 @@ export const realtimeReflections = () => {
           object.castShadow = true
         }
       });
+
+      window.cubeCamera = cubeCamera
       renderer_ = renderer
       initXrScene({ scene, camera, renderer })  // Add objects set the starting camera position.
       // Sync the xr controller's 6DoF position and camera paremeters with our scene.
     },
     onUpdate: () => {
       const { scene, camera, renderer } = XR8.Threejs.xrScene()
-      cubeCamera.update(renderer, cubeMapScene)
+      window.cubeCamera.update(renderer, cubeMapScene)
     },
-    //   onProcessCpu: ({frameStartResult}) => {
-    //     const {cameraTexture} = frameStartResult
-    //     // force initialization
-    //     const {scene, camera, renderer} = XR8.Threejs.xrScene()  // Get the 3js scene from XR8.Threejs
-    //     const texProps = renderer.properties.get(camTexture_)
-    //     texProps.__webglTexture = cameraTexture
-    //   },
+    onProcessCpu: ({frameStartResult}) => {
+      const {cameraTexture} = frameStartResult
+
+      // refresh teh textures
+      const {scene, camera, renderer} = XR8.Threejs.xrScene()  // Get the 3js scene from XR8.Threejs
+      const texProps = renderer.properties.get(camTexture_)
+      texProps.__webglTexture = cameraTexture
+    },
   }
 }
